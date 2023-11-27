@@ -29,8 +29,8 @@ public class EmployeeService : IEmployeeService
             _employeeRules.EmployeeAgeNotBeLessThanEighteen(employee.Age);
             _employeeRules.EmployeePhoneNumberLengthMustBe11(employee.PhoneNumber);
             _employeeRules.EmployeePhoneNumberMustBeStartWithZero(employee.PhoneNumber);
-            _employeeRules.TitleIdIsValid(employee.TitleId);
-            _employeeRules.HospitalIdIsValid(employee.HospitalId);
+            _employeeRules.TitleIdIsPresent(employee.TitleId);
+            _employeeRules.HospitalIdIsPresent(employee.HospitalId);
             employee.Id = new Guid();
             _employeeRepository.Add(employee);
 
@@ -108,12 +108,26 @@ public class EmployeeService : IEmployeeService
 
     public Response<List<EmployeeDetailDTO>> GetAllDetailByTitleId(int titileId)
     {
-        var details = _employeeRepository.GetDetailsByTitleId(titileId);
-        return new Response<List<EmployeeDetailDTO>>()
+        try
         {
-            Data = details,
-            StatusCode = System.Net.HttpStatusCode.OK
-        };
+            _employeeRules.TitleIdIsPresent(titileId);
+            var details = _employeeRepository.GetDetailsByTitleId(titileId);
+            return new Response<List<EmployeeDetailDTO>>()
+            {
+                Data = details,
+                StatusCode = System.Net.HttpStatusCode.OK
+            };
+        }
+        catch (ServiceExceptions ex)
+        {
+
+            return new Response<List<EmployeeDetailDTO>>()
+            {
+                Message = ex.Message,
+                StatusCode = System.Net.HttpStatusCode.BadRequest
+            };
+        }
+
     }
 
     public Response<List<EmployeeDetailDTO>> GetAllEmployeeDetails()
@@ -128,35 +142,75 @@ public class EmployeeService : IEmployeeService
 
     public Response<EmployeeDetailDTO> GetByDetailId(Guid id)
     {
-        var detail = _employeeRepository.GetEmployeeDetail(id);
-        return new Response<EmployeeDetailDTO>()
+        try
         {
-            Data = detail,
-            Message = "Çalışan detayları getirildi.",
-            StatusCode = System.Net.HttpStatusCode.OK
-        };
+            _employeeRules.EmployeeIsPresent(id);
+            var detail = _employeeRepository.GetEmployeeDetail(id);
+            return new Response<EmployeeDetailDTO>()
+            {
+                Data = detail,
+                Message = "Çalışan detayları getirildi.",
+                StatusCode = System.Net.HttpStatusCode.OK
+            };
+        }
+        catch (ServiceExceptions ex)
+        {
+
+            return new Response<EmployeeDetailDTO>()
+            {
+                Message = ex.Message,
+                StatusCode = System.Net.HttpStatusCode.BadRequest
+            };
+        }
+
     }
 
     public Response<EmployeeResponseDTO> GetById(Guid id)
     {
-        var employee = _employeeRepository.GetById(id);
-        var response = EmployeeResponseDTO.ConvertToResponse(employee);
-        return new Response<EmployeeResponseDTO>()
+        try
         {
-            Data = response,
-            StatusCode = System.Net.HttpStatusCode.OK
-        };
+            _employeeRules.EmployeeIsPresent(id);
+            var employee = _employeeRepository.GetById(id);
+            var response = EmployeeResponseDTO.ConvertToResponse(employee);
+            return new Response<EmployeeResponseDTO>()
+            {
+                Data = response,
+                StatusCode = System.Net.HttpStatusCode.OK
+            };
+        }
+        catch (ServiceExceptions ex)
+        {
+            return new Response<EmployeeResponseDTO>() { Message = ex.Message, StatusCode = System.Net.HttpStatusCode.BadRequest };
+        }
     }
 
     public Response<EmployeeResponseDTO> Update(EmployeeUpdateRequest employeeUpdateRequest)
     {
-        var employee = EmployeeUpdateRequest.ConvertToEntity(employeeUpdateRequest);
-        _employeeRepository.Uptade(employee);
-        var data = EmployeeResponseDTO.ConvertToResponse(employee);
-        return new Response<EmployeeResponseDTO>
+        try
         {
-            Data = data,
-            StatusCode = System.Net.HttpStatusCode.OK
-        };
+            var employee = EmployeeUpdateRequest.ConvertToEntity(employeeUpdateRequest);
+            _employeeRules.EmployeeAgeNotBeLessThanEighteen(employee.Age);
+            _employeeRules.EmployeePhoneNumberLengthMustBe11(employee.PhoneNumber);
+            _employeeRules.EmployeePhoneNumberMustBeStartWithZero(employee.PhoneNumber);
+            _employeeRules.TitleIdIsPresent(employee.TitleId);
+            _employeeRules.HospitalIdIsPresent(employee.HospitalId);
+            _employeeRepository.Uptade(employee);
+            var data = EmployeeResponseDTO.ConvertToResponse(employee);
+            return new Response<EmployeeResponseDTO>
+            {
+                Data = data,
+                StatusCode = System.Net.HttpStatusCode.OK
+            };
+        }
+        catch (ServiceExceptions ex)
+        {
+
+            return new Response<EmployeeResponseDTO>()
+            {
+                Message = ex.Message,
+                StatusCode = System.Net.HttpStatusCode.BadRequest
+            };
+        }
+
     }
 }

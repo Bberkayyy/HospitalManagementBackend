@@ -43,18 +43,18 @@ public class EmployeeRules : IEmployeeRules
         if (!phoneNumber.StartsWith("0"))
             throw new ServiceExceptions($"Telefon numarası 0 ile başlamalıdır. ({phoneNumber[0]})");
     }
-    public void TitleIdIsValid(int id)
+    public void TitleIdIsPresent(int id)
     {
         var title = _titleRepository.GetById(id);
         if (title is null)
         {
-            throw new ServiceExceptions($"Lütfen mevcut bir ünvan seçiniz. ({id})");
+            throw new ServiceExceptions($"Lütfen mevcut bir ünvan id giriniz. ({id})");
         }
     }
-    public void HospitalIdIsValid(int id)
+    public void HospitalIdIsPresent(int id)
     {
         var hospital = _hospitalRepository.GetById(id);
         if (hospital is null)
-            throw new ServiceExceptions($"Lütfen mevcut bir hastane seçiniz. ({id})");
+            throw new ServiceExceptions($"Lütfen mevcut bir hastane id giriniz. ({id})");
     }
 }

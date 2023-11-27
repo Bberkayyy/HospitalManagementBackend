@@ -9,4 +9,6 @@ namespace Service.ServiceRules.Abstract;
 public interface IHospitalRules
 {
     void HospitalNameMustBeUnique(string hospitalName);
+    void HospitalIsPresent(int id);
+
 }

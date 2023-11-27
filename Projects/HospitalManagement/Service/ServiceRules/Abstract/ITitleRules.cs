@@ -9,4 +9,5 @@ namespace Service.ServiceRules.Abstract;
 public interface ITitleRules
 {
     void TitleNameMustBeUnique(string titleName);
+    void TitleIsPresent(int id);
 }

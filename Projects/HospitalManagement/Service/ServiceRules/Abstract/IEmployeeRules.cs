@@ -14,7 +14,7 @@ public interface IEmployeeRules
     void EmployeeIsPresent(Guid id);
     void EmployeePhoneNumberMustBeStartWithZero(string phoneNumber);
 
-    public void TitleIdIsValid(int id);
+    public void TitleIdIsPresent(int id);
 
-    public void HospitalIdIsValid(int id);
+    public void HospitalIdIsPresent(int id);
 }
